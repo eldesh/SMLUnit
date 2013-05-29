@@ -303,4 +303,10 @@ struct
     type parameter = {output : TextIO.outstream}
     val runTest : parameter -> Test.test -> unit
   end
+  structure TAPTestRunner =
+  struct
+    type parameter = {output : TextIO.outstream}
+    val runTest : parameter -> Test.test -> unit
+  end
 end
+

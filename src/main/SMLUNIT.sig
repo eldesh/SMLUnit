@@ -14,6 +14,11 @@ sig
   structure Test : TEST
 
   structure TextUITestRunner : TESTRUNNER
+  structure TAPTestRunner    : sig
+    include TESTRUNNER
+    exception TODO of string
+    exception SKIP of string
+  end
 
 (*
   structure HTMLReportTestRunner : TESTRUNNER

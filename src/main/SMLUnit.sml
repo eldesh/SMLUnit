@@ -14,6 +14,7 @@ struct
   structure Test = Test
 
   structure TextUITestRunner = TextUITestRunner
+  structure TAPTestRunner    = TAPTestRunner
 
 (*
   structure HTMLReportTestRunner = HTMLReportTestRunner
