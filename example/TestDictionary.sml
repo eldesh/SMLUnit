@@ -56,10 +56,13 @@ struct
         ("exists0002", testExists0002),
         ("lookup0001", testLookup0001),
         ("isEmpty0001", testIsEmpty0001)
+        , ("TODO_1", (fn _=> raise SMLUnit.TAPTestRunner.TODO "todo"))
+        , ("SKIP_1", (fn _=> raise SMLUnit.TAPTestRunner.SKIP "skip"))
       ]
 
 end;
 
+print "TextUITestRunner:\n";
 SMLUnit.TextUITestRunner.runTest
     {output = TextIO.stdOut}
     (TestDictionary.suite ());
@@ -70,3 +73,25 @@ SMLUnit.TextUITestRunner.runTest
     tests = 5, failures = 1, errors = 0
     val it = () : unit
 *)
+print "\n\n";
+
+print "TAPTestRunner:\n";
+SMLUnit.TAPTestRunner.runTest
+    {output = TextIO.stdOut}
+    (TestDictionary.suite ());
+(*
+  Sample session:
+    - TAPTestRunner.runTest () (TestDictionary.suite ());
+    0..7
+    ok 1
+    ok 2
+    ok 3
+    ok 4
+    ok 5
+    not ok 6 # TODO todo
+    # TODO_1
+    ok 7 # SKIP skip
+    # SKIP_1
+    val it = () : unit
+*)
+
