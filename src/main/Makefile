@@ -20,7 +20,8 @@ SRCS = \
 	  Assert.sml \
 	  SMLUnit.sml \
 	  Test.sml \
-	  TextUITestRunner.sml
+	  TextUITestRunner.sml \
+	  TAPTestRunner.sml
 
 ## categorise source code
 SMLSRCS = $(filter %.sml,$(SRCS))

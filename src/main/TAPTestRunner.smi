@@ -1,0 +1,14 @@
+_require "basis.smi"
+_require "Assert.smi"
+_require "Test.smi"
+_require "TESTRUNNER.sig"
+
+structure TAPTestRunner =
+struct
+  type parameter = {output : TextIO.outstream}
+  val runTest : parameter -> Test.test -> unit
+  exception TODO of string
+  exception SKIP of string
+end
+
+
