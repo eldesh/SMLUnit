@@ -1,0 +1,10 @@
+(**
+ * @author takayuki goto
+ *)
+$(SML_LIB)/basis/basis.mlb
+  ../src/main/sources.mlb
+  DICTIONARY.sig
+  Dictionary.sml
+  TestDictionary.sml
+
+

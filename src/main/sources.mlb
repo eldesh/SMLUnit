@@ -14,5 +14,6 @@ $(SML_LIB)/basis/basis.mlb
   HTMLReportTestRunner.sml
 *)
   TextUITestRunner.sml
+  TAPTestRunner.sml
   SMLUNIT.sig
   SMLUnit.sml
