@@ -55,6 +55,10 @@ struct
       String.concatWith "\n# " (line::diag)
     end
 
+  fun count (TestCase _) = 1
+    | count (TestLabel (_, t)) = count t
+    | count (TestList xs) = foldl op+ 0 (map count xs)
+
   fun doTest parameter path test =
     let
       fun println s = printTo parameter (s^"\n")
@@ -92,27 +96,21 @@ struct
                                 , diagnostic=[String.concatWith "." (rev path)] })
             ))
         | go i path (TestLabel (label, test)) =
-              go (i+1) (label::path) test
+              go i (label::path) test
         | go i path (TestList tests) =
-            (
-              foldl (fn (t,n)=> (go n path t;n+1)) i tests;
-              ()
+            ( 
+             foldl (fn (t,n)=> (go n path t;n + count t)) i tests;
+             ()
             )
     in
       go 0 [] test
     end
 
-  local
-    fun count (TestCase _) = 1
-      | count (TestLabel (_, t)) = count t
-      | count (TestList xs) = foldl op+ 0 (map count xs)
-  in
-    (* 'plan' of TAP format
-     * The 'plan' tells how many tests will be run, or how many tests have run.
-     *)
-    fun mkplan test =
-      concat["0..", int (count test)]
-  end
+  (* 'plan' of TAP format
+   * The 'plan' tells how many tests will be run, or how many tests have run.
+   *)
+  fun mkplan test =
+    concat["0..", int (count test)]
 
   fun runTest parameter test =
     let
