@@ -45,8 +45,8 @@ struct
           (Test.TestCase test) =>
           ((
              if TestPath.match filter path
-             then println("    match: " ^ String.concatWith separator path)
-             else println("not match: " ^ String.concatWith separator path);
+             then println("    match: " ^ String.concatWith separator (""::path))
+             else println("not match: " ^ String.concatWith separator (""::path));
              {testCount = 1, failures = [], errors = []}
            )
            handle Assert.Fail failure =>
