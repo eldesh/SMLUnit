@@ -20,7 +20,7 @@ sig
   (**
    * parse the input string as subset of XPath.
    *)
-  val ofString : string -> path
+  val fromString : string -> path option
 
   val toString : path -> string
 end

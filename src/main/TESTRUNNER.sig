@@ -15,13 +15,13 @@ sig
   type parameter
 
   (**
-   *  perform tests
+   *  perform tests specified by one of the filters
    * @params parameter path test
    * @param parameter implementation specific parameter
-   * @param path a subtree of the test to perform
+   * @param paths a subtree of the test to perform
    * @param test a tree of possible tests to perform
    *)
-  val runTest : parameter -> TestPath.path -> Test.test -> unit
+  val runTest : parameter -> TestPath.path list -> Test.test -> unit
 
   (***************************************************************************)
 

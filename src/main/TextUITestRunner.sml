@@ -48,7 +48,8 @@ struct
         case test of
           (Test.TestCase test) =>
           (
-           if TestPath.match filter path
+           (* any of the filters match this test path *)
+           if List.exists (fn f => TestPath.match f path) filter
            then
              ( (* println("match: " ^ path_to_string path); *)
                test();
@@ -135,8 +136,8 @@ struct
 
   (***************************************************************************)
 
-  fun runTest parameter filter test =
-      printTestResult parameter (doTest parameter filter [] test)
+  fun runTest parameter filters test =
+      printTestResult parameter (doTest parameter filters [] test)
 
   (***************************************************************************)
 

@@ -8,9 +8,17 @@ struct
 
     exception NodeNameIsEmpty
 
-    fun ofString "*" = Wildcard
-      | ofString ""  = raise NodeNameIsEmpty
-      | ofString nam = Name nam
+    fun scan rd ss =
+      case rd ss
+        of SOME ("*", ss) => SOME (Wildcard, ss)
+         | SOME ("" ,  _) => raise NodeNameIsEmpty
+         | SOME (nam, ss) => SOME (Name nam, ss)
+         | NONE           => NONE
+
+    fun fromString ss =
+      case scan (String.scan Substring.getc) (Substring.full ss)
+        of SOME (r, _) => SOME r
+         | NONE        => NONE
 
     fun toString (Name name) = name
       | toString Wildcard    = "*"
@@ -43,18 +51,24 @@ struct
            match (Descendant (pattern, path)) ss
        | _ => false
 
-  fun ofString' fs =
+  fun fromString' fs =
     case fs
-      of (""::f::fs) => Descendant (Node.ofString f, ofString' fs)
-       | (f::fs)     => Child      (Node.ofString f, ofString' fs)
-       | []          => End
+      of (""::f::fs) =>
+         (case (Node.fromString f, fromString' fs)
+            of (SOME node, SOME path) => SOME (Descendant (node, path))
+             | _                      => NONE)
+       | (f::fs)     =>
+         (case (Node.fromString f, fromString' fs)
+            of (SOME node, SOME path) => SOME (Child      (node, path))
+             | _                      => NONE)
+       | []          => SOME End
 
-  fun ofString ss =
+  fun fromString ss =
     let
       (* The 1st character of ss should be '/' *)
       val ""::fields = String.fields (fn c => c = #"/") ss
     in
-      ofString' fields
+      fromString' fields
       handle Node.NodeNameIsEmpty => raise NodeNameIsEmpty { path = ss }
     end
 

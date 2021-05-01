@@ -9,15 +9,16 @@ struct
 
   local
     open SMLUnit.Test
+    structure Path = SMLUnit.TestPath
   in
-  fun main (_: string, arg::_: string list) =
+  fun main (_: string, args: string list) =
       let
         val tests =
             TestList
                 (TestRequiredModules.tests () @ TestOptionalModules.tests ())
-        val path = SMLUnit.TestPath.ofString arg
+        val path = map (valOf o SMLUnit.TestPath.fromString) args
       in
-        print(concat["path:", SMLUnit.TestPath.toString path,"\n"]);
+        app (fn path => print(concat["path:", Path.toString path,"\n"])) path;
         SMLUnit.TextUITestRunner.runTest {output = TextIO.stdOut} path tests
        ; OS.Process.success
       end
