@@ -9,6 +9,8 @@ Group is
   Assert.sml
   TEST.sig
   Test.sml
+  TEST_PATH.sig
+  TestPath.sml
   TESTRUNNER.sig
 (*
   HTMLReportTestRunner.sml

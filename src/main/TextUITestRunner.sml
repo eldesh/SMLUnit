@@ -35,45 +35,49 @@ struct
       (TextIO.output(#output parameter, string);
        TextIO.flushOut(#output parameter))
 
-  fun doTest parameter path test =
+  fun println ss = (print ss; print "\n")
+
+  fun doTest parameter filter path test =
       let
         val print = printTo parameter
       in
         case test of
           (Test.TestCase test) =>
           ((
-             test ();
-             print ".";
+             if TestPath.match filter path
+             then println("    match: " ^ String.concatWith separator path)
+             else println("not match: " ^ String.concatWith separator path);
              {testCount = 1, failures = [], errors = []}
            )
            handle Assert.Fail failure =>
                   let
-                    val message = 
+                    val message =
                         case failure of
                           Assert.GeneralFailure message => message
                         | Assert.NotEqualFailure (expected, actual) =>
                           "expected:<" ^ expected ^">, actual:<" ^ actual ^ ">"
                   in
                     print "F";
-                    {testCount = 1, failures = [(path, message)], errors = []}
+                    {testCount = 1, failures = [(String.concatWith separator path, message)], errors = []}
                   end
-                | error => 
+                | error =>
                   (
                     print "E";
-                    {testCount = 1, failures = [], errors = [(path, error)]}
+                    {testCount = 1, failures = [], errors = [(String.concatWith separator path, error)]}
                   ))
         | (Test.Test (label, f)) =>
-          doTest parameter path (Test.TestLabel (label, Test.TestCase f))
+          doTest parameter filter path (Test.TestLabel (label, Test.TestCase f))
         | (Test.TestLabel (label, test)) =>
-          doTest parameter (path ^ separator ^ label) test
+          doTest parameter filter (path @ [label]) test
         | (Test.TestList tests) =>
-          let 
+          let
             fun runOneTest (test, (index, {testCount, failures, errors})) =
                 let
                   val result =
                       doTest
                           parameter
-                          (path ^ separator ^ (Int.toString index)) test
+                          filter
+                          (path @ [Int.toString index]) test
                 in
                   (
                     index + 1,
@@ -118,8 +122,8 @@ struct
 
   (***************************************************************************)
 
-  fun runTest parameter test =
-      printTestResult parameter (doTest parameter separator test)
+  fun runTest parameter filter test =
+      printTestResult parameter (doTest parameter filter [] test)
 
   (***************************************************************************)
 

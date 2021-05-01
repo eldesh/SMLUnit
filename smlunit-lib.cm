@@ -6,6 +6,7 @@ Library
 	signature ASSERT
 	signature SMLUNIT
 	signature TEST
+	signature TEST_PATH
 	structure SMLUnit
 is
 	src/sources.cm

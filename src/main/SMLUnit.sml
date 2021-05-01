@@ -13,6 +13,8 @@ struct
 
   structure Test = Test
 
+  structure TestPath = TestPath
+
   structure TextUITestRunner = TextUITestRunner
 
 (*

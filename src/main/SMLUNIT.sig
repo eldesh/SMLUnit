@@ -13,6 +13,8 @@ sig
 
   structure Test : TEST
 
+  structure TestPath : TEST_PATH
+
   structure TextUITestRunner : TESTRUNNER
 
 (*

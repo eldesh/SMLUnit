@@ -16,11 +16,12 @@ sig
 
   (**
    *  perform tests
-   * @params parameter test
+   * @params parameter path test
    * @param parameter implementation specific parameter
-   * @param test to perform
+   * @param path a subtree of the test to perform
+   * @param test a tree of possible tests to perform
    *)
-  val runTest : parameter -> Test.test -> unit
+  val runTest : parameter -> TestPath.path -> Test.test -> unit
 
   (***************************************************************************)
 
