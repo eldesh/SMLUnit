@@ -19,6 +19,8 @@ struct
        {
          (** the number of test performed *)
          testCount : int, 
+         (** the number of test skipped *)
+         skipCount : int,
          (** tests aborted by assertion failure *)
          failures : (string * string) list, 
          (** tests aborted by any exception raised *)
@@ -43,35 +45,39 @@ struct
       in
         case test of
           (Test.TestCase test) =>
-          ((
-             if TestPath.match filter path
-             then println("    match: " ^ String.concatWith separator (""::path))
-             else println("not match: " ^ String.concatWith separator (""::path));
-             {testCount = 1, failures = [], errors = []}
-           )
-           handle Assert.Fail failure =>
-                  let
-                    val message =
-                        case failure of
-                          Assert.GeneralFailure message => message
-                        | Assert.NotEqualFailure (expected, actual) =>
-                          "expected:<" ^ expected ^">, actual:<" ^ actual ^ ">"
-                  in
-                    print "F";
-                    {testCount = 1, failures = [(String.concatWith separator path, message)], errors = []}
-                  end
-                | error =>
-                  (
-                    print "E";
-                    {testCount = 1, failures = [], errors = [(String.concatWith separator path, error)]}
-                  ))
+          (
+           if TestPath.match filter path
+           then
+             ( println("    match: " ^ String.concatWith separator (""::path));
+               {testCount = 1, skipCount = 0, failures = [], errors = []}
+             )
+             handle Assert.Fail failure =>
+                    let
+                      val message =
+                          case failure of
+                            Assert.GeneralFailure message => message
+                          | Assert.NotEqualFailure (expected, actual) =>
+                            "expected:<" ^ expected ^">, actual:<" ^ actual ^ ">"
+                    in
+                      print "F";
+                      {testCount = 1, skipCount = 0, failures = [(String.concatWith separator path, message)], errors = []}
+                    end
+                  | error =>
+                    (
+                      print "E";
+                      {testCount = 1, skipCount = 0, failures = [], errors = [(String.concatWith separator path, error)]}
+                    )
+           else
+             ( println("not match: " ^ String.concatWith separator (""::path));
+               {testCount = 0, skipCount = 1, failures = [], errors = []}
+             ))
         | (Test.Test (label, f)) =>
           doTest parameter filter path (Test.TestLabel (label, Test.TestCase f))
         | (Test.TestLabel (label, test)) =>
           doTest parameter filter (path @ [label]) test
         | (Test.TestList tests) =>
           let
-            fun runOneTest (test, (index, {testCount, failures, errors})) =
+            fun runOneTest (test, (index, {testCount, skipCount, failures, errors})) =
                 let
                   val result =
                       doTest
@@ -83,6 +89,7 @@ struct
                     index + 1,
                     {
                       testCount = testCount + (#testCount result),
+                      skipCount = skipCount + (#skipCount result),
                       failures = failures @ (#failures result),
                       errors = errors @ (#errors result)
                     }
@@ -92,16 +99,17 @@ struct
             #2
                 (foldl
                      runOneTest
-                     (1, {testCount = 0, failures = [], errors = []})
+                     (1, {testCount = 0, skipCount = 0, failures = [], errors = []})
                      tests)
           end
       end
 
-  fun printTestResult parameter ({testCount, failures, errors} : testResult) =
+  fun printTestResult parameter ({testCount, skipCount, failures, errors} : testResult) =
       let
         val print = printTo parameter
         val message =
             ("tests = " ^ (Int.toString testCount) ^ ", ") ^
+            ("skipped = " ^ (Int.toString skipCount) ^ ", ") ^
             ("failures = " ^ (Int.toString (List.length failures)) ^ ", ") ^
             ("errors = " ^ (Int.toString (List.length errors)))
       in
