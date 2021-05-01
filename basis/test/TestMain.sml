@@ -16,11 +16,14 @@ struct
         val tests =
             TestList
                 (TestRequiredModules.tests () @ TestOptionalModules.tests ())
-        val path = map (valOf o SMLUnit.TestPath.fromString) args
+        val path =
+          if null args
+          then [Path.root]
+          else map (valOf o Path.fromString) args
       in
         app (fn path => print(concat["path:", Path.toString path,"\n"])) path;
-        SMLUnit.TextUITestRunner.runTest {output = TextIO.stdOut} path tests
-       ; OS.Process.success
+        SMLUnit.TextUITestRunner.runTest {output = TextIO.stdOut} path tests;
+        OS.Process.success
       end
   end
 

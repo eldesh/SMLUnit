@@ -32,6 +32,8 @@ struct
 
   exception NodeNameIsEmpty of { path: string }
 
+  val root = Descendant (Node.Wildcard, End)
+
   fun match path ss =
     case (path, ss)
       of (End, _) => true

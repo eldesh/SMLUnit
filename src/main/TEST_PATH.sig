@@ -9,6 +9,13 @@ sig
   type path
 
   (**
+   * Root node or it's descendants
+   *
+   * This represents the entire node of a tree
+   *)
+  val root : path
+
+  (**
    * checks if the target is included in the set represented by path.
    *
    * @params path target
