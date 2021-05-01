@@ -39,6 +39,8 @@ struct
 
   fun println ss = (print ss; print "\n")
 
+  fun path_to_string path = separator ^ String.concatWith separator path
+
   fun doTest parameter filter path test =
       let
         val print = printTo parameter
@@ -48,7 +50,9 @@ struct
           (
            if TestPath.match filter path
            then
-             ( println("    match: " ^ String.concatWith separator (""::path));
+             ( (* println("match: " ^ path_to_string path); *)
+               test();
+               print ".";
                {testCount = 1, skipCount = 0, failures = [], errors = []}
              )
              handle Assert.Fail failure =>
@@ -60,15 +64,16 @@ struct
                             "expected:<" ^ expected ^">, actual:<" ^ actual ^ ">"
                     in
                       print "F";
-                      {testCount = 1, skipCount = 0, failures = [(String.concatWith separator path, message)], errors = []}
+                      {testCount = 1, skipCount = 0, failures = [(path_to_string path, message)], errors = []}
                     end
                   | error =>
                     (
                       print "E";
-                      {testCount = 1, skipCount = 0, failures = [], errors = [(String.concatWith separator path, error)]}
+                      {testCount = 1, skipCount = 0, failures = [], errors = [(path_to_string path, error)]}
                     )
            else
-             ( println("not match: " ^ String.concatWith separator (""::path));
+             ( (* println("skip: " ^ path_to_string path); *)
+               print "S";
                {testCount = 0, skipCount = 1, failures = [], errors = []}
              ))
         | (Test.Test (label, f)) =>
