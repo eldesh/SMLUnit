@@ -32,12 +32,11 @@ sig
             *)
          | Test of string * testFunction
            (**
-            *  a test with name
-            * @params (label, test)
-            * @param label the name of the test
-            * @param test the test to be named
+            * aggregation of tests with labels
+            * @params labeled_tests
+            * @param list of labeled tests
             *)
-         | TestLabel of (string * test)
+         | TestLabel of (string * test) list
            (**
             * aggregation of tests
             * @params tests

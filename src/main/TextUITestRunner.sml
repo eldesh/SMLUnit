@@ -89,9 +89,13 @@ struct
                {testCount = 0, skipCount = 1, failures = [], errors = []}
              ))
         | (Test.Test (label, f)) =>
-          doTest parameter filter path (Test.TestLabel (label, Test.TestCase f))
-        | (Test.TestLabel (label, test)) =>
-          doTest parameter filter (path @ [label]) test
+          doTest parameter filter (label::path) (Test.TestCase f)
+        | (Test.TestLabel labeled_tests) =>
+          foldl
+            (fn ((l,t),r) =>
+                testResultAppend (r, doTest parameter filter (l::path) t))
+            testResultUnit
+            labeled_tests
         | (Test.TestList tests) =>
           let
             fun runOneTest (test, (index, acc_result)) =

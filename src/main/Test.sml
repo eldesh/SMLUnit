@@ -14,15 +14,15 @@ struct
   datatype test =
            TestCase of (unit -> unit)
          | Test of string * (unit -> unit)
-         | TestLabel of (string * test)
+         | TestLabel of (string * test) list
          | TestList of test list
 
   (***************************************************************************)
 
   fun labelTests labelTestPairList =
-      TestList
+      TestLabel
       (map
-       (fn (label, function) => (TestLabel (label, TestCase function)))
+       (fn (label, function) => (label, TestCase function))
        labelTestPairList)
 
   (***************************************************************************)
