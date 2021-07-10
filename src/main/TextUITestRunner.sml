@@ -27,6 +27,17 @@ struct
          errors : (string * exn) list 
        }
 
+  val testResultUnit : testResult =
+    {testCount = 0, skipCount = 0, failures = [], errors = []}
+
+  fun testResultAppend (testA: testResult, testB: testResult) : testResult =
+    {
+      testCount = #testCount testA + (#testCount testB),
+      skipCount = #skipCount testA + (#skipCount testB),
+      failures = #failures testA @ (#failures testB),
+      errors = #errors testA @ (#errors testB)
+    }
+
   (***************************************************************************)
 
   val separator = "/"
@@ -83,7 +94,7 @@ struct
           doTest parameter filter (path @ [label]) test
         | (Test.TestList tests) =>
           let
-            fun runOneTest (test, (index, {testCount, skipCount, failures, errors})) =
+            fun runOneTest (test, (index, acc_result)) =
                 let
                   val result =
                       doTest
@@ -93,19 +104,14 @@ struct
                 in
                   (
                     index + 1,
-                    {
-                      testCount = testCount + (#testCount result),
-                      skipCount = skipCount + (#skipCount result),
-                      failures = failures @ (#failures result),
-                      errors = errors @ (#errors result)
-                    }
+                    testResultAppend (result, acc_result)
                   )
                 end
           in
             #2
                 (foldl
                      runOneTest
-                     (1, {testCount = 0, skipCount = 0, failures = [], errors = []})
+                     (1, testResultUnit)
                      tests)
           end
       end
