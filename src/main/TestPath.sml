@@ -44,9 +44,6 @@ struct
        | (* //* "" *)
          (Descendant (Node.Wildcard, path), []) =>
            match path []
-       | (* //nam "" *)
-         (Descendant (Node.Name nam, path), []) =>
-           false
        | (* //path [label,ss] *)
          (Descendant (pattern, path), label::ss) =>
            match (Child      (pattern, path)) (label::ss) orelse
