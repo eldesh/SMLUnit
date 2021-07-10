@@ -25,10 +25,11 @@ struct
    * custom assertion for the Test.test type
    *)
   fun assertEqualTest (Test.TestLabel pair1) (Test.TestLabel pair2) =
-      Assert.assertEqual2Tuple
-       (Assert.assertEqualString,assertEqualTest)
-       pair1
-       pair2
+      Assert.assertEqualList
+       (Assert.assertEqual2Tuple
+         (Assert.assertEqualString,assertEqualTest))
+         pair1
+         pair2
     | assertEqualTest (Test.TestList list1) (Test.TestList list2) =
       Assert.assertEqualList assertEqualTest list1 list2
     | assertEqualTest (Test.TestCase _) (case2 as Test.TestCase _) =
@@ -47,7 +48,7 @@ struct
   fun testLabelTests0001 () =
       let
         val arg = []
-        val expected = Test.TestList []
+        val expected = Test.TestLabel []
       in
         assertEqualTest expected (Test.labelTests arg)
       end
@@ -57,8 +58,8 @@ struct
         fun test0002 () = ()
         val arg = [ ("test0002", test0002) ]
         val expected =
-            Test.TestList
-            [ Test.TestLabel ("test0002", Test.TestCase test0002) ]
+            Test.TestLabel
+            [ ("test0002", Test.TestCase test0002) ]
       in
         assertEqualTest expected (Test.labelTests arg)
       end
@@ -69,10 +70,10 @@ struct
         fun test0003_2 () = ()
         val arg = [ ("test0003_1", test0003_1), ("test0003_2", test0003_2) ]
         val expected =
-            Test.TestList
+            Test.TestLabel
             [
-              Test.TestLabel ("test0003_1", Test.TestCase test0003_1),
-              Test.TestLabel ("test0003_2", Test.TestCase test0003_2)
+              ("test0003_1", Test.TestCase test0003_1),
+              ("test0003_2", Test.TestCase test0003_2)
             ]
       in
         assertEqualTest expected (Test.labelTests arg)
@@ -84,10 +85,10 @@ struct
         (* Duplicate entry *)
         val arg = [ ("test0004", test0004), ("test0004", test0004) ]
         val expected =
-            Test.TestList
+            Test.TestLabel
             [
-              Test.TestLabel ("test0004", Test.TestCase test0004),
-              Test.TestLabel ("test0004", Test.TestCase test0004)
+              ("test0004", Test.TestCase test0004),
+              ("test0004", Test.TestCase test0004)
             ]
       in
         assertEqualTest expected (Test.labelTests arg)
