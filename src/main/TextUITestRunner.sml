@@ -50,7 +50,13 @@ struct
 
   fun println ss = (print ss; print "\n")
 
-  fun path_to_string path = separator ^ String.concatWith separator path
+  fun path_to_string path =
+    let
+      fun go acc [] = acc
+        | go acc (p::ps) = go (separator :: p :: acc) ps
+    in
+      String.concat (go [] path)
+    end
 
   fun doTest parameter filter path test =
       let
@@ -60,7 +66,7 @@ struct
           (Test.TestCase test) =>
           (
            (* any of the filters match this test path *)
-           if List.exists (fn f => TestPath.match f path) filter
+           if List.exists (fn f => TestPath.match f (rev path)) filter
            then
              ( (* println("match: " ^ path_to_string path); *)
                test();
@@ -104,7 +110,7 @@ struct
                       doTest
                           parameter
                           filter
-                          (path @ [Int.toString index]) test
+                          (Int.toString index::path) test
                 in
                   (
                     index + 1,
