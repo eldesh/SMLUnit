@@ -10,6 +10,7 @@ struct
         TestAssert.runTest ();
         TestTest.runTest ();
         TestTextUITestRunner.runTest ();
+        TestTestPath.runTest ();
         OS.Process.success
       )
 
