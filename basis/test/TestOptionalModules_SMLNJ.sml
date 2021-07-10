@@ -11,14 +11,15 @@ struct
     open SMLUnit.Test
   in
   fun tests () =
+    TestLabel
       [
-        TestLabel ("IntInf001", IntInf001.suite ()),
-        TestLabel ("IntInf101", IntInf101.suite ()),
-        TestLabel ("Array2001", Array2001.suite ()),
-        TestLabel ("RealArray001", RealArray001.suite ()),
-        TestLabel ("RealArray101", RealArray101.suite ()),
-        TestLabel ("RealVector001", RealVector001.suite ()),
-        TestLabel ("RealVector101", RealVector101.suite ())
+        ("IntInf001", IntInf001.suite ()),
+        ("IntInf101", IntInf101.suite ()),
+        ("Array2001", Array2001.suite ()),
+        ("RealArray001", RealArray001.suite ()),
+        ("RealArray101", RealArray101.suite ()),
+        ("RealVector001", RealVector001.suite ()),
+        ("RealVector101", RealVector101.suite ())
       ]
   end (* local *)
 

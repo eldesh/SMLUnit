@@ -14,8 +14,10 @@ struct
   fun main (_: string, args: string list) =
       let
         val tests =
-            TestList
-                (TestRequiredModules.tests () @ TestOptionalModules.tests ())
+          TestList [
+            TestRequiredModules.tests (),
+            TestOptionalModules.tests ()
+          ]
         val path =
           if null args
           then [Path.root]
