@@ -15,6 +15,8 @@ sig
    *)
   val root : path
 
+  val equals : path * path -> bool
+
   (**
    * checks if the target is included in the set represented by path.
    *

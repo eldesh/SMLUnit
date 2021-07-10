@@ -3,15 +3,39 @@ structure TestPath :> TEST_PATH =
 struct
   structure Node =
   struct
-    datatype node = Name of string
-                  | Wildcard
+    datatype node =
+        (**
+         * @params pattern
+         * @param glob pattern matches to file paths
+         *)
+        Name of string
 
     exception NodeNameIsEmpty
 
+    fun match (Name pat) str =
+      let
+        val pat = Substring.full pat
+        val str = Substring.full str
+        fun go pat str =
+          case (Substring.getc pat, Substring.getc str)
+            of (NONE         , NONE      ) => true
+             | (SOME(#"*",cs), NONE      ) =>
+                 go cs str
+             | (SOME(#"*",cs), SOME(s,ss)) =>
+                 (* consume one charactor or ... *)
+                 go pat  ss orelse
+                 (* does not consume even one charactor *)
+                 go cs  str
+             | (SOME(   c,cs), SOME(s,ss)) =>
+                 c = s andalso go cs ss
+             | (            _,          _) => false
+      in
+        go pat str
+      end
+
     fun scan rd ss =
       case rd ss
-        of SOME ("*", ss) => SOME (Wildcard, ss)
-         | SOME ("" ,  _) => raise NodeNameIsEmpty
+        of SOME ("" ,  _) => raise NodeNameIsEmpty
          | SOME (nam, ss) => SOME (Name nam, ss)
          | NONE           => NONE
 
@@ -21,7 +45,6 @@ struct
          | NONE        => NONE
 
     fun toString (Name name) = name
-      | toString Wildcard    = "*"
   end
 
   datatype path = End
@@ -32,18 +55,22 @@ struct
 
   exception NodeNameIsEmpty of { path: string }
 
-  val root = Descendant (Node.Wildcard, End)
+  val root = Descendant (Node.Name "*", End)
+
+  fun equals (path1, path2) =
+    case (path1, path2)
+      of (End, End) => true
+       | (Child (node1,path1), Child (node2,path2)) =>
+           node1 = node2 andalso equals (path1, path2)
+       | (Descendant (node1, path1), Descendant (node2, path2)) =>
+           node1 = node2 andalso equals (path1, path2)
+       | (_, _) => false
 
   fun match path ss =
     case (path, ss)
       of (End, _) => true
-       | (Child (Node.Wildcard, path), label::ss) =>
-           match path ss
-       | (Child (Node.Name nam, path), label::ss) =>
-           nam = label andalso match path ss
-       | (* //* "" *)
-         (Descendant (Node.Wildcard, path), []) =>
-           match path []
+       | (Child (node, path), label::ss) =>
+           Node.match node label andalso match path ss
        | (* //path [label,ss] *)
          (Descendant (pattern, path), label::ss) =>
            match (Child      (pattern, path)) (label::ss) orelse
