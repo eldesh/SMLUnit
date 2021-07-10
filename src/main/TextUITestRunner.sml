@@ -30,6 +30,9 @@ struct
   val testResultUnit : testResult =
     {testCount = 0, skipCount = 0, failures = [], errors = []}
 
+  (**
+   * append 2 test results into one
+   *)
   fun testResultAppend (testA: testResult, testB: testResult) : testResult =
     {
       testCount = #testCount testA + (#testCount testB),
@@ -68,9 +71,9 @@ struct
            (* any of the filters match this test path *)
            if List.exists (fn f => TestPath.match f (rev path)) filter
            then
-             ( (* println("match: " ^ path_to_string path); *)
+             ( println("match: " ^ path_to_string path);
                test();
-               print ".";
+               (* print "."; *)
                {testCount = 1, skipCount = 0, failures = [], errors = []}
              )
              handle Assert.Fail failure =>
@@ -90,8 +93,8 @@ struct
                       {testCount = 1, skipCount = 0, failures = [], errors = [(path_to_string path, error)]}
                     )
            else
-             ( (* println("skip: " ^ path_to_string path); *)
-               print "S";
+             ( println("skip: " ^ path_to_string path);
+               (* print "S"; *)
                {testCount = 0, skipCount = 1, failures = [], errors = []}
              ))
         | (Test.Test (label, f)) =>
